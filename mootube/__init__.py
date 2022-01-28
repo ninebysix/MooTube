@@ -1,8 +1,8 @@
 #----------------------------------------------------------------------
-# LinMoTube
+# MooTube
 # by Jake Day
-# v1.2
-# Basic GUI for YouTube on Linux Mobile
+# v1.3
+# YouTube App for Mobile Linux
 #----------------------------------------------------------------------
 
 import ctypes, os, requests, io, sys, subprocess, gi, json, threading
@@ -18,19 +18,19 @@ from OpenGL import GL, GLX
 
 from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
 
-class LinMoTube(Gtk.Window):
+class MooTube(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self)
-        self.set_title("LinMoTube")
+        self.set_title("MooTube")
         self.set_border_width(10)
         self.set_default_size(300, 420)
         #self.maximize()
 
     def draw(self):
         self.my_path = os.path.abspath(os.path.dirname(__file__))
-        self.cache_path = os.path.expanduser("~/.cache/linmotube/")
-        self.config_path = os.path.expanduser("~/.config/linmotube/")
-        self.library_file = os.path.expanduser("~/.config/linmotube/library.json")
+        self.cache_path = os.path.expanduser("~/.cache/mootube/")
+        self.config_path = os.path.expanduser("~/.config/mootube/")
+        self.library_file = os.path.expanduser("~/.config/mootube/library.json")
 
         if os.path.exists(self.cache_path) == False:
             os.mkdir(self.cache_path)
@@ -46,7 +46,7 @@ class LinMoTube(Gtk.Window):
             self.librarydata = []
 
         provider = Gtk.CssProvider()
-        provider.load_from_file(Gio.File.new_for_path(os.path.join(self.my_path, 'assets/linmotube.css')))
+        provider.load_from_file(Gio.File.new_for_path(os.path.join(self.my_path, 'assets/mootube.css')))
         Gtk.StyleContext.add_provider_for_screen(Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         self.get_style_context().add_class('app-theme')
@@ -58,12 +58,12 @@ class LinMoTube(Gtk.Window):
         self.criteria = None
         self.library = False
 
-        header = Gtk.HeaderBar(title="LinMoTube")
+        header = Gtk.HeaderBar(title="MooTube")
         header.get_style_context().add_class('app-theme')
         header.props.show_close_button = True
 
         logopb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(self.my_path, 'assets/linmotube.png'),
+            filename=os.path.join(self.my_path, 'assets/mootube.png'),
             width=30, 
             height=30, 
             preserve_aspect_ratio=True)
@@ -698,7 +698,7 @@ def get_process_address(_, name):
     address = GLX.glXGetProcAddress(name.decode("utf-8"))
     return ctypes.cast(address, ctypes.c_void_p).value
 
-app = LinMoTube()
+app = MooTube()
 app.connect("destroy", Gtk.main_quit)
 app.draw()
 Gtk.main()

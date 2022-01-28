@@ -4,12 +4,12 @@ import setuptools
 import setuptools.command.build_py
 
 setuptools.setup(
-    name='LinMoTube',
-    version='1.2',
-    description='LinMoTube',
+    name='MooTube',
+    version='1.3',
+    description='MooTube',
     keywords='youtube',
     author='Jake Day',
-    url='https://github.com/jakeday/LinMoTube',
+    url='https://github.com/ninebysix/MooTube',
     python_requires='>=3.8',
     install_requires=[
         'youtube-search-python',
@@ -17,8 +17,8 @@ setuptools.setup(
     ],
     include_package_data=True,
     data_files=[
-        ('/usr/share/icons/hicolor/scalable/apps', ['linmotube/assets/linmotube.png']),
-        ('/usr/share/applications', ['linmotube/assets/linmotube.desktop'])
+        ('/usr/share/icons/hicolor/scalable/apps', ['mootube/assets/mootube.png']),
+        ('/usr/share/applications', ['mootube/assets/mootube.desktop'])
     ],
     package_data={
         "": ["assets/*"]
@@ -26,7 +26,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     entry_points={
         'console_scripts': [
-            'linmotube=linmotube',
+            'mootube=mootube',
         ],
     },
 )
