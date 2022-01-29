@@ -8,6 +8,7 @@
 import ctypes, os, requests, io, sys, subprocess, gi, json, threading
 from urllib.parse import urlparse
 from youtubesearchpython import *
+from ytmusicapi import YTMusic
 from PIL import Image
 
 gi.require_version("Gtk", "3.0")
@@ -92,12 +93,12 @@ class MooTube(Gtk.Window):
 
         self.searchentry = Gtk.SearchEntry()
         self.searchentry.set_text("")
-        self.searchentry.connect("activate", self.OnVideoSearch)
+        self.searchentry.connect("activate", self.OnSearch)
         self.searchentry.get_style_context().add_class('app-theme')
         searchbox.pack_start(self.searchentry, True, True, 0)
 
         searchbtn = Gtk.Button(label="Go")
-        searchbtn.connect("clicked", self.OnVideoSearch)
+        searchbtn.connect("clicked", self.OnSearch)
         searchbtn.get_style_context().add_class('app-theme')
         searchbox.pack_start(searchbtn, False, False, 0)
 
@@ -215,6 +216,7 @@ class MooTube(Gtk.Window):
         x.start()
 
         self.player = MediaPlayer()
+        self.ytmusic = YTMusic()
 
     def GetOriginalIdleTime(self):
         sbprocess = subprocess.Popen(['gsettings', 'get', 'org.gnome.desktop.session', 'idle-delay'], stdout=subprocess.PIPE)
@@ -235,13 +237,13 @@ class MooTube(Gtk.Window):
         x = threading.Thread(target=self.DoSearch, args=(self.criteria, True))
         x.start()
 
-    def OnVideoSearch(self, button):
+    def OnSearch(self, button):
         x = threading.Thread(target=self.DoSearch, args=(self.searchentry.get_text(), True))
         x.start()
 
     def DoSearchMore(self, swin, pos, dist):
         if pos == Gtk.PositionType.BOTTOM:
-            if self.library == False:
+            if self.library == False and self.mode == "V":
                 x = threading.Thread(target=self.DoSearch, args=(self.criteria, False))
                 x.start()
 
@@ -257,50 +259,54 @@ class MooTube(Gtk.Window):
 
         GLib.idle_add(self.DoShowLoading)
 
-        if clear:
-            self.videosSearch = VideosSearch(self.criteria, limit=10)
+        if self.mode == "V":
+            if clear:
+                self.videosSearch = VideosSearch(self.criteria, limit=10)
+            else:
+                self.videosSearch.next()
+            results = self.videosSearch.result()['result']
         else:
-            self.videosSearch.next()
-        results = self.videosSearch.result()['result']
+            if clear:
+                results = self.ytmusic.search(self.criteria, filter='songs', limit=20)
+            else:
+                return
 
         for vid in results:
-            thumbname = vid['id']
-
             if self.mode == "V":
-                vidthumb = vid['thumbnails'][0]['url']
-
-                vidurl = urlparse(vidthumb)
-                
-                if os.path.exists(os.path.join(self.cache_path, thumbname)) == False:
-                    content = requests.get(vidthumb).content
-
-                    file = open(os.path.join(self.cache_path, thumbname), "wb")
-                    file.write(content)
-                    file.close()
-
-                    im = Image.open(os.path.join(self.cache_path, thumbname)).convert("RGB")
-                    im.save(os.path.join(self.cache_path, thumbname), "jpeg")
-
-            if self.mode == "M":
-                channelthumb = vid['thumbnails'][0]['url']
-                channelurl = urlparse(channelthumb)
-                channelthumbname = vid['id']
-            else:
+                thumbname = vid['id']
                 channelthumb = vid['channel']['thumbnails'][0]['url']
                 channelurl = urlparse(channelthumb)
                 channelthumbname = os.path.basename(channelurl.path)
 
-            if os.path.exists(os.path.join(self.cache_path, channelthumbname)) == False:
-                channelcontent = requests.get(channelthumb).content
+                if os.path.exists(os.path.join(self.cache_path, channelthumbname)) == False:
+                    channelcontent = requests.get(channelthumb).content
 
-                file = open(os.path.join(self.cache_path, channelthumbname), "wb")
-                file.write(channelcontent)
+                    file = open(os.path.join(self.cache_path, channelthumbname), "wb")
+                    file.write(channelcontent)
+                    file.close()
+
+                    im = Image.open(os.path.join(self.cache_path, channelthumbname)).convert("RGB")
+                    im.save(os.path.join(self.cache_path, channelthumbname), "jpeg")
+            else:
+                thumbname = vid['videoId']
+
+            vidthumb = vid['thumbnails'][0]['url']
+            vidurl = urlparse(vidthumb)
+            
+            if os.path.exists(os.path.join(self.cache_path, thumbname)) == False:
+                content = requests.get(vidthumb).content
+
+                file = open(os.path.join(self.cache_path, thumbname), "wb")
+                file.write(content)
                 file.close()
 
-                im = Image.open(os.path.join(self.cache_path, channelthumbname)).convert("RGB")
-                im.save(os.path.join(self.cache_path, channelthumbname), "jpeg")
+                im = Image.open(os.path.join(self.cache_path, thumbname)).convert("RGB")
+                im.save(os.path.join(self.cache_path, thumbname), "jpeg")
 
-            GLib.idle_add(self.DoAddVideo, vid['id'], vid['title'], thumbname, channelthumbname, vid['channel']['name'], vid['viewCount']['short'])
+            if self.mode == "V":
+                GLib.idle_add(self.DoAddVideo, vid['id'], vid['title'], thumbname, channelthumbname, vid['channel']['name'], vid['viewCount']['short'])
+            else:
+                GLib.idle_add(self.DoAddVideo, vid['videoId'], vid['title'], thumbname, thumbname, vid['artists'][0]['name'], None)
 
         GLib.idle_add(self.DoHideLoading)
 

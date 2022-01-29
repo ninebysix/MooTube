@@ -12,7 +12,9 @@ setuptools.setup(
     url='https://github.com/ninebysix/MooTube',
     python_requires='>=3.8',
     install_requires=[
+        'pillow',
         'youtube-search-python',
+        'ytmusicapi',
         'python-mpv'
     ],
     include_package_data=True,
