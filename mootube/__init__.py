@@ -5,7 +5,7 @@
 # YouTube App for Mobile Linux
 #----------------------------------------------------------------------
 
-import ctypes, os, requests, io, sys, subprocess, gi, json, threading
+import ctypes, os, requests, io, sys, subprocess, gi, json, threading, locale
 from urllib.parse import urlparse
 from youtubesearchpython import *
 from ytmusicapi import YTMusic
@@ -651,6 +651,8 @@ class MediaPlayer(Gtk.GLArea):
         return False
 
     def mode(self, mode, stream):
+        locale.setlocale(locale.LC_NUMERIC, 'C')
+
         if mode == "V":
             if stream == True:
                 self.mpv = MPV(
