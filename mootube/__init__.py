@@ -492,6 +492,10 @@ class MooTube(Gtk.Window):
                 self.player.mode(type, False)
                 self.player.play(os.path.join(self.cache_path, id + ".mp3"))
             else:
+                result = self.ytmusic.get_song(id)
+                if len(result['streamingData']['adaptiveFormats']) >= 1:
+                    if 'url' in result['streamingData']['adaptiveFormats'][0]:
+                        vidurl = result['streamingData']['adaptiveFormats'][0]['url']
                 self.player.mode(type, True)
                 self.player.play(vidurl)
 
