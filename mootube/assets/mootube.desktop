@@ -1,10 +1,10 @@
 [Desktop Entry]
-Name=LinMoTube
-GenericName=LinMoTube
+Name=MooTube
+GenericName=MooTube
 Terminal=false
 Type=Application
 Categories=Application
-Icon=linmotube
-Exec=linmotube
-StartupWMClass=linmotube
+Icon=mootube
+Exec=mootube
+StartupWMClass=mootube
 X-Purism-FormFactor=Workstation;Mobile;
