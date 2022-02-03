@@ -616,7 +616,7 @@ class MediaPlayer(Gtk.GLArea):
     def __init__(self, **properties):
         super().__init__(**properties)
 
-        self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(get_process_address)
+        self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(self.get_process_address)
 
         self.ctx = None
         self.mode("V", True)
@@ -706,9 +706,9 @@ class MediaPlayer(Gtk.GLArea):
     def seek(self, pos):
         self.mpv.seek(pos)
 
-def get_process_address(_, name):
-    address = GLX.glXGetProcAddress(name.decode("utf-8"))
-    return ctypes.cast(address, ctypes.c_void_p).value
+    def get_process_address(_, name):
+        address = GLX.glXGetProcAddress(name.decode("utf-8"))
+        return ctypes.cast(address, ctypes.c_void_p).value
 
 app = MooTube()
 app.connect("destroy", Gtk.main_quit)
