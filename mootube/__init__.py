@@ -483,6 +483,9 @@ class MooTube(Gtk.Window):
     def DoPlayVideo(self, button, uri, id, type):
         vidurl = 'https://www.youtube.com/watch?v=' + id
 
+        if self.playing:
+            self.player.stop()
+
         if type == "V":
             if os.path.exists(os.path.join(self.cache_path, id + ".mp4")):
                 self.player.mode(type, False)
