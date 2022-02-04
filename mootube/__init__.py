@@ -680,10 +680,9 @@ class MediaPlayer(Gtk.GLArea):
                     input_vo_keyboard=True,
                     osc=True
                 )
-            #self.mpv.fullscreen = True
         else:
             if stream == True:
-                self.mpv = MPV(video=False, stream_buffer_size='5MiB', demuxer_max_bytes='1024KiB', ytdl=True)
+                self.mpv = MPV(video=False, stream_buffer_size='5MiB', demuxer_max_bytes='1024KiB', ytdl=True, ytdl_format='(bestaudio)')
             else:
                 self.mpv = MPV(video=False)
 
