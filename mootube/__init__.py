@@ -102,23 +102,23 @@ class MooTube(Gtk.Window):
         searchbtn.get_style_context().add_class('app-theme')
         searchbox.pack_start(searchbtn, False, False, 0)
 
-        self.musicpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(self.my_path, 'assets/music.png'),
-            width=24, 
-            height=24, 
-            preserve_aspect_ratio=True)
-        self.musicimg = Gtk.Image.new_from_pixbuf(self.musicpb)
-        self.videopb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(self.my_path, 'assets/video.png'),
-            width=24, 
-            height=24, 
-            preserve_aspect_ratio=True)
-        self.videoimg = Gtk.Image.new_from_pixbuf(self.videopb)
-        self.modebtn = Gtk.Button()
-        self.modebtn.connect("clicked", self.OnToggleMode)
-        self.modebtn.add(self.videoimg)
-        self.modebtn.get_style_context().add_class('app-theme')
-        searchbox.pack_start(self.modebtn, False, False, 0)
+        modebox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        container.add(modebox)
+
+        self.videoslabel = Gtk.Label(label="Videos")
+        self.videoslabel.set_halign(Gtk.Align.END)
+        modebox.pack_start(self.videoslabel, True, True, 0)
+
+        self.modebtn = Gtk.Switch()
+        self.modebtn.set_active(False)
+        self.modebtn.connect("notify::active", self.OnToggleMode)
+        self.modebtn.get_style_context().add_class('switch-theme')
+
+        modebox.pack_start(self.modebtn, True, True, 0)
+
+        self.musiclabel = Gtk.Label(label="Music")
+        self.musiclabel.set_halign(Gtk.Align.START)
+        modebox.pack_start(self.musiclabel, True, True, 0)
 
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -224,15 +224,13 @@ class MooTube(Gtk.Window):
         
         self.idleTime = out.decode('UTF-8').replace("uint32", "").strip()
 
-    def OnToggleMode(self, button):
+    def OnToggleMode(self, switch, gparam):
         self.library = False
 
-        if self.mode == "V":
+        if switch.get_active():
             self.mode = "M"
-            self.modebtn.get_child().set_from_pixbuf(self.musicpb)
         else:
             self.mode = "V"
-            self.modebtn.get_child().set_from_pixbuf(self.videopb)
 
         x = threading.Thread(target=self.DoSearch, args=(self.criteria, True))
         x.start()
@@ -361,10 +359,10 @@ class MooTube(Gtk.Window):
             vidmeta.pack_start(channelimg, False, False, 0)
 
         vidinfo = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-        vidmeta.pack_start(vidinfo, False, False, 0)
+        vidmeta.pack_start(vidinfo, True, True, 0)
 
         vidheader = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        vidinfo.pack_start(vidheader, False, False, 0)
+        vidinfo.pack_start(vidheader, True, True, 0)
 
         titlelabel = Gtk.Label()
         titlelabel.set_markup("<a href=''><big><b>" + title.replace("&", "&amp;") + "</b></big></a>")

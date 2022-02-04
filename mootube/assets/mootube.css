@@ -19,3 +19,14 @@ scale trough * {
   background-color: #ff0000;
   color: #ff0000;
 }
+.switch-theme {
+  background-image: none;
+  background-color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255);
+}
+.switch-theme slider {
+  background-image: none;
+  background-color: rgb(255, 0, 0);
+  border-width: 1px;
+  border-radius: 15px;
+}
