@@ -304,7 +304,10 @@ class MooTube(Gtk.Window):
             if self.mode == "V":
                 GLib.idle_add(self.DoAddVideo, vid['id'], vid['title'], thumbname, channelthumbname, vid['channel']['name'], vid['viewCount']['short'])
             else:
-                GLib.idle_add(self.DoAddVideo, vid['videoId'], vid['title'], thumbname, thumbname, vid['artists'][0]['name'], None)
+                explicit = ""
+                if vid['isExplicit']:
+                    explicit = "explicit"
+                GLib.idle_add(self.DoAddVideo, vid['videoId'], vid['title'], thumbname, thumbname, vid['artists'][0]['name'], explicit)
 
         GLib.idle_add(self.DoHideLoading)
 
