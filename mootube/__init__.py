@@ -14,7 +14,7 @@ from PIL import Image
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
 
-from .player import MediaPlayer
+import player
 
 class MooTube(Gtk.Window):
     def __init__(self):
@@ -227,7 +227,7 @@ class MooTube(Gtk.Window):
         x = threading.Thread(target=self.DoSearch, args=(None, True))
         x.start()
 
-        self.player = MediaPlayer(self)
+        self.player = player.MediaPlayer(self)
         self.ytmusic = YTMusic()
 
     def GetOriginalIdleTime(self):
