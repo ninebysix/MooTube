@@ -8,6 +8,7 @@
 }
 .no-border {
   border: none;
+  box-shadow: none;
 }
 .border-top {
   border-top: solid 1px rgb(0, 0, 0)
