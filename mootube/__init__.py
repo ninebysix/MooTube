@@ -76,17 +76,17 @@ class MooTube(Gtk.Window):
         searchbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
         container.add(searchbox)
 
-        librarypb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=os.path.join(self.my_path, 'assets/library.png'),
+        filterspb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=os.path.join(self.my_path, 'assets/filters.png'),
             width=24, 
             height=24, 
             preserve_aspect_ratio=True)
-        libraryimg = Gtk.Image.new_from_pixbuf(librarypb)
-        librarybtn = Gtk.Button()
-        librarybtn.connect("clicked", self.OnLoadLibrary)
-        librarybtn.add(libraryimg)
-        librarybtn.get_style_context().add_class('app-theme')
-        searchbox.pack_start(librarybtn, False, False, 0)
+        filtersimg = Gtk.Image.new_from_pixbuf(filterspb)
+        filtersbtn = Gtk.Button()
+        filtersbtn.connect("clicked", self.OnLoadFilters)
+        filtersbtn.add(filtersimg)
+        filtersbtn.get_style_context().add_class('app-theme')
+        searchbox.pack_start(filtersbtn, False, False, 0)
 
         self.searchentry = Gtk.SearchEntry()
         self.searchentry.set_text("")
@@ -183,7 +183,22 @@ class MooTube(Gtk.Window):
         self.loadinglabel.set_line_wrap(True)
         self.loadinglabel.set_max_width_chars(68)
         self.loadinglabel.get_style_context().add_class('app-theme')
-        container.pack_end(self.loadinglabel, False, False, 0)
+        container.pack_start(self.loadinglabel, False, False, 0)
+
+        librarybox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        container.pack_end(librarybox, False, False, 0)
+
+        librarypb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename=os.path.join(self.my_path, 'assets/library.png'),
+            width=24, 
+            height=24, 
+            preserve_aspect_ratio=True)
+        libraryimg = Gtk.Image.new_from_pixbuf(librarypb)
+        self.librarybtn = Gtk.Button()
+        self.librarybtn.connect("clicked", self.OnLoadLibrary)
+        self.librarybtn.add(libraryimg)
+        self.librarybtn.get_style_context().add_class('app-theme')
+        librarybox.pack_start(self.librarybtn, True, True, 0)
 
         self.downloadpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=os.path.join(self.my_path, 'assets/download.png'),
@@ -232,6 +247,17 @@ class MooTube(Gtk.Window):
         x = threading.Thread(target=self.DoSearch, args=(self.criteria, True))
         x.start()
 
+    def OnLoadFilters(self, button):
+        dialog = FiltersDialog(self)
+        response = dialog.run()
+
+        #if response == Gtk.ResponseType.OK:
+        #    print("ok")
+        #elif response == Gtk.ResponseType.CANCEL:
+        #    print("cancel")
+
+        dialog.destroy()
+
     def OnSearch(self, button):
         x = threading.Thread(target=self.DoSearch, args=(self.searchentry.get_text(), True))
         x.start()
@@ -245,6 +271,8 @@ class MooTube(Gtk.Window):
     def DoSearch(self, criteria, clear):
         self.criteria = criteria
         self.library = False
+
+        self.librarybtn.get_style_context().remove_class('library-mode')
 
         if self.criteria == None:
             self.criteria = "linux mobile"
@@ -417,48 +445,53 @@ class MooTube(Gtk.Window):
     def OnLoadLibrary(self, button):
         self.DoClearVideoList()
 
-        self.library = True
+        if (self.library):
+            self.library = False
+            self.OnSearch(self.searchentry)
+        else:
+            self.library = True
+            self.librarybtn.get_style_context().add_class('library-mode')
 
-        for vid in self.librarydata:
-            vidcard = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-            self.videolist.add(vidcard)
+            for vid in self.librarydata:
+                vidcard = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+                self.videolist.add(vidcard)
 
-            vidmeta = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-            vidcard.pack_start(vidmeta, False, False, 0)
-            
-            thumbpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=os.path.join(self.cache_path, vid['thumb']),
-                width=68,
-                height=68,
-                preserve_aspect_ratio=False)
-            thumbimg = Gtk.Image.new_from_pixbuf(thumbpb)
-            vidbtn = Gtk.Button()
-            vidbtn.add(thumbimg)
-            vidbtn.connect("clicked", self.OnPlayVideo, None, vid['id'], vid['title'], vid['type'])
-            vidbtn.get_style_context().add_class('app-theme')
-            vidbtn.get_style_context().add_class('no-border')
-            vidmeta.pack_start(vidbtn, False, False, 0)
+                vidmeta = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+                vidcard.pack_start(vidmeta, False, False, 0)
+                
+                thumbpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                    filename=os.path.join(self.cache_path, vid['thumb']),
+                    width=68,
+                    height=68,
+                    preserve_aspect_ratio=False)
+                thumbimg = Gtk.Image.new_from_pixbuf(thumbpb)
+                vidbtn = Gtk.Button()
+                vidbtn.add(thumbimg)
+                vidbtn.connect("clicked", self.OnPlayVideo, None, vid['id'], vid['title'], vid['type'])
+                vidbtn.get_style_context().add_class('app-theme')
+                vidbtn.get_style_context().add_class('no-border')
+                vidmeta.pack_start(vidbtn, False, False, 0)
 
-            titlelabel = Gtk.Label()
-            titlelabel.set_markup("<a href=''><big><b>" + vid['title'].strip().replace("&", "&amp;") + "</b></big></a>")
-            titlelabel.connect("activate-link", self.OnPlayVideo, vid['id'], vid['title'].strip(), vid['type'])
-            titlelabel.set_justify(Gtk.Justification.LEFT)
-            titlelabel.set_halign(Gtk.Align.START)
-            titlelabel.set_line_wrap(True)
-            titlelabel.set_max_width_chars(68)
-            titlelabel.get_style_context().add_class('app-theme')
-            vidmeta.pack_start(titlelabel, True, True, 0)
+                titlelabel = Gtk.Label()
+                titlelabel.set_markup("<a href=''><big><b>" + vid['title'].strip().replace("&", "&amp;") + "</b></big></a>")
+                titlelabel.connect("activate-link", self.OnPlayVideo, vid['id'], vid['title'].strip(), vid['type'])
+                titlelabel.set_justify(Gtk.Justification.LEFT)
+                titlelabel.set_halign(Gtk.Align.START)
+                titlelabel.set_line_wrap(True)
+                titlelabel.set_max_width_chars(68)
+                titlelabel.get_style_context().add_class('app-theme')
+                vidmeta.pack_start(titlelabel, True, True, 0)
 
-            removeimg = Gtk.Image.new_from_pixbuf(self.removepb)
-            removebtn = Gtk.Button()
-            removebtn.add(removeimg)
-            removebtn.connect("clicked", self.OnRemoveVideo, vid['id'])
-            removebtn.get_style_context().add_class('app-theme')
-            removebtn.get_style_context().add_class('no-border')
-            vidmeta.pack_end(removebtn, False, False, 0)
+                removeimg = Gtk.Image.new_from_pixbuf(self.removepb)
+                removebtn = Gtk.Button()
+                removebtn.add(removeimg)
+                removebtn.connect("clicked", self.OnRemoveVideo, vid['id'])
+                removebtn.get_style_context().add_class('app-theme')
+                removebtn.get_style_context().add_class('no-border')
+                vidmeta.pack_end(removebtn, False, False, 0)
 
-        self.show_all()
-        self.DoHideLoading()
+            self.show_all()
+            self.DoHideLoading()
 
         if self.playing:
             self.controls.show()
@@ -613,7 +646,22 @@ class MooTube(Gtk.Window):
         pos = n - c
         self.player.seek(pos)
         self.seeking = False
-        
+
+class FiltersDialog(Gtk.Dialog):
+    def __init__(self, parent):
+        super().__init__(title="Filters", transient_for=parent, flags=0)
+        self.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
+        )
+
+        self.set_default_size(150, 100)
+
+        label = Gtk.Label(label="Filters coming soon!")
+
+        box = self.get_content_area()
+        box.add(label)
+        self.show_all()
+
 app = MooTube()
 app.connect("destroy", Gtk.main_quit)
 app.draw()

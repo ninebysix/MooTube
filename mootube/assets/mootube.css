@@ -31,3 +31,6 @@ scale trough * {
   border-width: 1px;
   border-radius: 15px;
 }
+.library-mode {
+  background-color: rgb(255, 0, 0);
+}
