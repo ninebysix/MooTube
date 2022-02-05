@@ -508,7 +508,7 @@ class MooTube(Gtk.Window):
         self.playing = True
 
         sbparams = ['gsettings', 'set', 'org.gnome.desktop.session', 'idle-delay', '0']
-        sbproc = subprocess.Popen(sbparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+        sbproc = subprocess.Popen(sbparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=-1)
 
         return True
 
@@ -524,7 +524,7 @@ class MooTube(Gtk.Window):
         self.currentposition = 0
 
         sbparams = ['gsettings', 'set', 'org.gnome.desktop.session', 'idle-delay', self.idleTime]
-        sbproc = subprocess.Popen(sbparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+        sbproc = subprocess.Popen(sbparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=-1)
 
     def OnPauseVideo(self, evt):
         if self.playing:
@@ -558,7 +558,7 @@ class MooTube(Gtk.Window):
                 '-o', os.path.join(self.cache_path, id + ".mp4"),
                 vidurl
             ]
-        download = subprocess.Popen(downloadparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1)
+        download = subprocess.Popen(downloadparams, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=-1)
 
         videodata = {
             'id' : id,
