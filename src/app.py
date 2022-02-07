@@ -55,6 +55,8 @@ class MooTube(Gtk.Window):
         self.duration = "00:00"
         self.criteria = None
         self.library = False
+        self.sortbyoption = 0
+        self.searchparams = None
 
         header = Gtk.HeaderBar(title="MooTube")
         header.get_style_context().add_class('app-theme')
@@ -283,8 +285,12 @@ class MooTube(Gtk.Window):
         GLib.idle_add(self.DoShowLoading)
 
         if self.mode == "V":
+
             if clear:
-                self.videosSearch = VideosSearch(self.criteria, limit=10)
+                if self.searchparams is None:
+                    self.videosSearch = CustomSearch(self.criteria, searchPreferences=SearchMode.videos, limit=10)
+                else:
+                    self.videosSearch = CustomSearch(self.criteria, searchPreferences=self.searchparams, limit=10)
             else:
                 self.videosSearch.next()
             results = self.videosSearch.result()['result']
@@ -653,14 +659,50 @@ class FiltersDialog(Gtk.Dialog):
         self.add_buttons(
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
         )
+        self.set_default_size(200, 200)
 
-        self.set_default_size(150, 100)
-
-        label = Gtk.Label(label="Filters coming soon!")
+        self.app = parent
 
         box = self.get_content_area()
-        box.add(label)
+        box.get_style_context().add_class('app-theme')
+        box.get_style_context().add_class('dialog-theme')
+
+        filtersbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        box.add(filtersbox)
+
+        sortbylabel = Gtk.Label(label="Sort By")
+        filtersbox.pack_start(sortbylabel, True, True, 0)
+
+        sortoptions = [
+            "Relevance",
+            "Upload Date",
+            "View Count",
+            "Rating",
+        ]
+        sortbycombo = Gtk.ComboBoxText()
+        sortbycombo.set_entry_text_column(0)
+        sortbycombo.connect("changed", self.DoUpdateFilters)
+        for sortoption in sortoptions:
+            sortbycombo.append_text(sortoption)
+        sortbycombo.set_active(self.app.sortbyoption)
+        filtersbox.pack_start(sortbycombo, True, True, 0)
+
         self.show_all()
+
+    def DoUpdateFilters(self, combo):
+        self.app.sortbyoption = combo.get_active()
+
+        option = combo.get_active_text()
+        if option == "Relevance":
+            self.app.searchparams = "CAASAhAB"
+        elif option == "Upload Date":
+            self.app.searchparams = "CAISAhAB"
+        elif option == "View Count":
+            self.app.searchparams = "CAMSAhAB"
+        elif option == "Rating":
+            self.app.searchparams = "CAESAhAB"
+        else:
+            self.app.searchparams = None
 
 app = MooTube()
 app.connect("destroy", Gtk.main_quit)

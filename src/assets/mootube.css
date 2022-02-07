@@ -34,3 +34,8 @@ scale trough * {
 .library-mode {
   background-color: rgb(255, 0, 0);
 }
+.dialog-theme * {
+  background-image: none;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+ }

@@ -14,6 +14,7 @@ Supports both YouTube Video mode and YouTube Music mode with a convenient toggle
 - Toggle between Video and Music mode
 - Download songs and videos to your offline library
 - Playback control for media
+- Filters for search
 
 Video List | Playback | Music List
 :-------------------------:|:-------------------------:|:-------------------------:
@@ -40,7 +41,8 @@ Video List | Playback | Music List
 
 ### TODO
 
-- Add support for filters
+- Custom playlists
+- Additional media controls
 
 ### Donations Appreciated!
 
