@@ -19,16 +19,16 @@ setuptools.setup(
     ],
     include_package_data=True,
     data_files=[
-        ('/usr/share/icons/hicolor/scalable/apps', ['mootube/assets/mootube.png']),
-        ('/usr/share/applications', ['mootube/assets/mootube.desktop'])
+        ('/usr/share/icons/hicolor/scalable/apps', ['src/assets/mootube.png']),
+        ('/usr/share/applications', ['src/assets/mootube.desktop'])
     ],
     package_data={
         "": ["assets/*"]
     },
-    packages=setuptools.find_packages(),
+    packages=['src', 'src.utils'],
     entry_points={
         'console_scripts': [
-            'mootube=mootube',
+            'mootube=src.app',
         ],
     },
 )

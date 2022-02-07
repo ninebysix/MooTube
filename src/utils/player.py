@@ -1,4 +1,4 @@
-import ctypes, os, requests, io, sys, subprocess, gi, json, threading, locale
+import ctypes, os, io, sys, gi, locale
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
