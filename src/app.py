@@ -22,7 +22,6 @@ class MooTube(Gtk.Window):
         self.set_title("MooTube")
         self.set_border_width(10)
         self.set_default_size(300, 420)
-        #self.maximize()
 
     def draw(self):
         self.my_path = os.path.abspath(os.path.dirname(__file__))
@@ -202,6 +201,24 @@ class MooTube(Gtk.Window):
         self.librarybtn.get_style_context().add_class('app-theme')
         librarybox.pack_start(self.librarybtn, True, True, 0)
 
+        self.show_all()
+        self.modebtn.grab_focus()
+        self.controls.hide()
+
+        self.player = MediaPlayer(self)
+        self.ytmusic = YTMusic()
+
+        x = threading.Thread(target=self.DoOnInit)
+        x.start()
+
+    def DoOnInit(self):
+        self.DoGetOriginalIdleTime()
+
+        self.DoLoadIcons()
+
+        self.DoSearch(None, True)
+
+    def DoLoadIcons(self):
         self.downloadpb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=os.path.join(self.my_path, 'assets/download.png'),
             width=24, 
@@ -220,19 +237,7 @@ class MooTube(Gtk.Window):
             height=24, 
             preserve_aspect_ratio=True)
 
-        self.show_all()
-        self.modebtn.grab_focus()
-        self.controls.hide()
-
-        self.GetOriginalIdleTime()
-
-        x = threading.Thread(target=self.DoSearch, args=(None, True))
-        x.start()
-
-        self.player = MediaPlayer(self)
-        self.ytmusic = YTMusic()
-
-    def GetOriginalIdleTime(self):
+    def DoGetOriginalIdleTime(self):
         sbprocess = subprocess.Popen(['gsettings', 'get', 'org.gnome.desktop.session', 'idle-delay'], stdout=subprocess.PIPE)
         out, err = sbprocess.communicate()
         
