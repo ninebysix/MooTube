@@ -130,7 +130,7 @@ class MooTube(Gtk.Window):
 
         self.controls = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.controls.get_style_context().add_class('border-top')
-        container.pack_end(self.controls, False, False, 0)
+        container.pack_start(self.controls, False, False, 0)
 
         playback = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         self.controls.pack_start(playback, False, False, 0)
@@ -188,7 +188,7 @@ class MooTube(Gtk.Window):
         container.pack_start(self.loadinglabel, False, False, 0)
 
         librarybox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
-        container.pack_end(librarybox, False, False, 0)
+        container.pack_start(librarybox, False, False, 0)
 
         librarypb = GdkPixbuf.Pixbuf.new_from_file_at_scale(
             filename=os.path.join(self.my_path, 'assets/library.png'),
