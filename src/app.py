@@ -55,6 +55,8 @@ class MooTube(Gtk.Window):
         self.criteria = None
         self.library = False
         self.sortbyoption = 0
+        self.uploaddateoption = 0
+        self.durationoption = 0
         self.searchparams = None
 
         header = Gtk.HeaderBar(title="MooTube")
@@ -684,30 +686,131 @@ class FiltersDialog(Gtk.Dialog):
             "View Count",
             "Rating",
         ]
-        sortbycombo = Gtk.ComboBoxText()
-        sortbycombo.set_entry_text_column(0)
-        sortbycombo.connect("changed", self.DoUpdateFilters)
+        self.sortbycombo = Gtk.ComboBoxText()
+        self.sortbycombo.set_entry_text_column(0)
+        self.sortbycombo.connect("changed", self.DoUpdateFilters)
         for sortoption in sortoptions:
-            sortbycombo.append_text(sortoption)
-        sortbycombo.set_active(self.app.sortbyoption)
-        filtersbox.pack_start(sortbycombo, True, True, 0)
+            self.sortbycombo.append_text(sortoption)
+        self.sortbycombo.set_active(self.app.sortbyoption)
+        filtersbox.pack_start(self.sortbycombo, True, True, 0)
+
+        uploaddatelabel = Gtk.Label(label="Upload Date")
+        filtersbox.pack_start(uploaddatelabel, True, True, 0)
+
+        uploaddates = [
+            "Anytime",
+            "Last Hour",
+            "Today",
+            "This Week",
+            "This Month",
+            "This Year"
+        ]
+        self.uploaddatecombo = Gtk.ComboBoxText()
+        self.uploaddatecombo.set_entry_text_column(0)
+        self.uploaddatecombo.connect("changed", self.DoUpdateFilters)
+        for uploaddate in uploaddates:
+            self.uploaddatecombo.append_text(uploaddate)
+        self.uploaddatecombo.set_active(self.app.uploaddateoption)
+        filtersbox.pack_start(self.uploaddatecombo, True, True, 0)
+
+        durationlabel = Gtk.Label(label="Duration")
+        filtersbox.pack_start(durationlabel, True, True, 0)
+
+        durations = [
+            "Any",
+            "Under 4 Minutes",
+            "4-20 Minutes",
+            "Over 20 Minutes",
+        ]
+        self.durationcombo = Gtk.ComboBoxText()
+        self.durationcombo.set_entry_text_column(0)
+        self.durationcombo.connect("changed", self.DoUpdateFilters)
+        for duration in durations:
+            self.durationcombo.append_text(duration)
+        self.durationcombo.set_active(self.app.durationoption)
+        filtersbox.pack_start(self.durationcombo, True, True, 0)
 
         self.show_all()
 
     def DoUpdateFilters(self, combo):
-        self.app.sortbyoption = combo.get_active()
+        self.app.sortbyoption = self.sortbycombo.get_active()
+        self.app.uploaddateoption = self.uploaddatecombo.get_active()
+        self.app.durationoption = self.durationcombo.get_active()
 
-        option = combo.get_active_text()
-        if option == "Relevance":
-            self.app.searchparams = "CAASAhAB"
-        elif option == "Upload Date":
-            self.app.searchparams = "CAISAhAB"
-        elif option == "View Count":
-            self.app.searchparams = "CAMSAhAB"
-        elif option == "Rating":
-            self.app.searchparams = "CAESAhAB"
+        sp = ""
+
+        if self.app.sortbyoption == 0:
+            if self.app.uploaddateoption == 0 and self.app.durationoption == 0:
+                sp += "CASSAhAB"
+            elif self.app.uploaddateoption == 0 and self.app.durationoption != 0:
+                sp += "Eg"
+
+                if self.app.durationoption == 1:
+                    sp += "QQARgB"
+                elif self.app.durationoption == 2:
+                    sp += "QQARgD"
+                elif self.app.durationoption == 3:
+                    sp += "QQARgC"
+            else:
+                sp += "Eg"
+
+                if self.app.durationoption == 0:
+                    sp += "Q"
+                else:
+                    sp += "Y"
+
+                if self.app.uploaddateoption == 1:
+                    sp += "IARAB"
+                elif self.app.uploaddateoption == 2:
+                    sp += "IAhAB"
+                elif self.app.uploaddateoption == 3:
+                    sp += "IAxAB"
+                elif self.app.uploaddateoption == 4:
+                    sp += "IBBAB"
+                elif self.app.uploaddateoption == 5:
+                    sp += "IBRAB"
+
+                if self.app.durationoption == 1:
+                    sp += "GAE"
+                elif self.app.durationoption == 2:
+                    sp += "GAM"
+                elif self.app.durationoption == 3:
+                    sp += "GAI"
         else:
-            self.app.searchparams = None
+            if self.app.sortbyoption == 1:
+                sp += "CAIS"
+            elif self.app.sortbyoption == 2:
+                sp += "CAMS"
+            elif self.app.sortbyoption == 3:
+                sp += "CAES"
+
+            if self.app.uploaddateoption == 0:
+                sp += "BBAB"
+
+            if self.app.durationoption == 0:
+                sp += "BAg"
+            else:
+                sp += "Bgg"
+
+            if self.app.uploaddateoption == 1:
+                sp += "BEAE"
+            elif self.app.uploaddateoption == 2:
+                sp += "CEAE"
+            elif self.app.uploaddateoption == 3:
+                sp += "DEAE"
+            elif self.app.uploaddateoption == 4:
+                sp += "EEAE"
+            elif self.app.uploaddateoption == 5:
+                sp += "FEAE"
+
+            if self.app.durationoption == 1:
+                sp += "YAQ"
+            elif self.app.durationoption == 2:
+                sp += "YAw"
+            elif self.app.durationoption == 3:
+                sp += "YAg"
+
+        self.app.searchparams = sp
 
 app = MooTube()
 app.connect("destroy", Gtk.main_quit)
