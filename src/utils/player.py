@@ -63,7 +63,7 @@ class MediaPlayer(Gtk.GLArea, Gtk.Window):
                     stream_buffer_size='5MiB',
                     demuxer_max_bytes='1024KiB',
                     ytdl=True,
-                    ytdl_format='(bestvideo[height<=720]+bestaudio)'
+                    ytdl_format='(webm[height<=720]+bestaudio/bestvideo[height<=720]+bestaudio)'
                 )
             else:
                 self.mpv = MPV(

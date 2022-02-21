@@ -24,7 +24,7 @@ Video List | Playback | Music List
 
 0. (Prep) Install Dependencies:
   ```
-   sudo apt install git python3 python3-pip libgtk-3-dev python3-requests python3-setuptools python3-gi python3-gi-cairo python3-opengl gir1.2-gtk-3.0 mpv libmpv-dev
+   sudo apt install git python3 python3-pip libgtk-3-dev python3-requests python3-setuptools python3-gi python3-gi-cairo python3-opengl gir1.2-gtk-3.0 mpv libmpv-dev yt-dlp
   ```
 1. Clone the MooTube repo:
   ```
