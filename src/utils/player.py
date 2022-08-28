@@ -6,14 +6,14 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, Gio, GLib
 gi.require_version('GL', '1.0')
 from OpenGL import GL, GLX
 
-from mpv import MPV, MpvRenderContext, OpenGlCbGetProcAddrFn
+from mpv import MPV, MpvRenderContext, MpvGlGetProcAddressFn
 
 class MediaPlayer(Gtk.GLArea, Gtk.Window):
     def __init__(self, mt, **properties):
         super().__init__(**properties)
         self.app = mt
 
-        self._proc_addr_wrapper = OpenGlCbGetProcAddrFn(self.get_process_address)
+        self._proc_addr_wrapper = MpvGlGetProcAddressFn(self.get_process_address)
 
         self.ctx = None
         self.mode("V", True)
